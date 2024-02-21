@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Upload Photos</h2>
+
+  <div id="formWrapper" style="position: relative;">
+
+    <button id="showFormBtn" style="position: absolute;">Show Form</button>
+
+    <form id="myForm" style="display: none; position: relative; top: 0; left: 0;" action="" method="post" autocomplete="off" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }} <br/>
+      <input type="file" name="images" multiple>
+      <input type="submit" value="Submit">
+    </form>
+
+  </div>
+
+  <script>
+    var formWrapper = document.getElementById('formWrapper');
+    var showFormBtn = document.getElementById('showFormBtn');
+    var myForm = document.getElementById('myForm');
+
+    // Показать/скрыть форму при нажатии на кнопку
+    showFormBtn.addEventListener('click', function(event) {
+      myForm.style.display = (myForm.style.display == 'none' || myForm.style.display === '') ? 'block' : 'none';
+    });
+
+    // Скрыть форму при клике в любое место за пределами формы
+    document.addEventListener('click', function(event) {
+      if (!formWrapper.contains(event.target)) {
+        myForm.style.display = 'none';
+      }
+    });
+  </script>
+{% endblock %}
