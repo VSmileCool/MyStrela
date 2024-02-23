@@ -55,13 +55,13 @@ def gallery_view(request):
 @login_required
 def gallery_view(request):
     if request.method == 'POST':
+        print(request.POST)
         form = MultiPhotoForm(request.POST, request.FILES)
         if form.is_valid():
             for image in request.FILES.getlist('images'):
                 Photo.objects.create(user=request.user, image=image)
-            return redirect('upload')
+            return redirect('user_gallery')
     else:
         form = MultiPhotoForm()
         photos = Photo.objects.filter(user=request.user)
         return render(request, 'Gallery.html', {'photos': photos, 'form': form})
-    # return render(request, 'upload.html', {'form': form})
