@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
+from django.core.validators import FileExtensionValidator
 from multiupload.fields import MultiFileField
 from mainApp.models import Photo, CustomUser
 
@@ -52,6 +53,9 @@ class CustomUserAuthForm(AuthenticationForm):
 
 
 class MultiPhotoForm(forms.ModelForm):
+    images = forms.FileField(validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])])
+
     class Meta:
         model = Photo
-        fields = []
+        fields = ['images']
+

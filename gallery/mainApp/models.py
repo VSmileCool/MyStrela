@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import FileExtensionValidator
 from django.db import models
 
 from gallery import settings
@@ -11,7 +12,7 @@ def user_directory_path(instance, filename):
 
 class Photo(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=user_directory_path)
+    image = models.ImageField(upload_to=user_directory_path,)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -43,7 +44,6 @@ class Album(models.Model):
     title = models.CharField(max_length=255)
     allowed_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='allowed_albums', blank=True)
     photos = models.ManyToManyField('Photo', related_name='albums_photos', blank=True)
-
 
     def __str__(self):
         return f"{self.author.email}'s Album: {self.title}"
