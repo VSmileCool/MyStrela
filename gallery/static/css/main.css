@@ -63,14 +63,15 @@ body {
 }
 
 .main-nav li {
-
+  margin-left: 25px;
 }
+
 
 .main-nav a {
   padding: 1.1em 0;
   color: #000000;
   font: 1.5em 'Source Sans Pro', Helvetica, Arial, sans-serif;
-  text-align: center;
+  text-align: left;
   transition: transform 0.5s ease;
 }
 
@@ -103,7 +104,8 @@ main {
   border-radius: 15px;
   margin-left: 16em; /* Ширина вашего вертикального меню (headernav) */
   height: calc(100vh - 100px); /* Рассчитываем высоту как 100% высоты видимой области минус высота верхнего меню */
-  overflow: auto; /* Добавим прокрутку, если контент внутри main будет больше, чем доступное пространство */
+  overflow: auto; /* прокрутка, если контент внутри main будет больше, чем доступное пространство */
+  padding: 40px 40px;
 }
 
 .topnav {
@@ -126,6 +128,7 @@ main {
 
 /* Style the search box inside the navigation bar */
 .topnav input[type="text"] {
+  border-radius: 10px;
   padding: 6px;
   font-size: 17px;
   width: 35%;
@@ -151,10 +154,11 @@ main {
 
 /*Див фоток*/
 div.gallery {
-  margin: 5px;
+  margin: 20px;
   border: 1px solid #ccc;
   float: left;
   width: 180px;
+  background: #D9D9D9;
 }
 
 div.gallery:hover {
