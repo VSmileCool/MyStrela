@@ -73,9 +73,6 @@ class MultipleFileField(forms.FileField):
 class MultiFileForm(forms.Form):
     files = MultipleFileField(validators=[
                                 FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'mp4', 'avi', 'mov'])])
-    # files = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}),
-    #                         validators=[
-    #                             FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'mp4', 'avi', 'mov'])])
 
 
 

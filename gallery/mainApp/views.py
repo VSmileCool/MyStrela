@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from mainApp.forms import CustomUserCreationForm, MultiFileForm, CustomUserAuthForm
-from mainApp.models import Files
+from mainApp.models import Files, Album
 
 
 def home_view(request):
@@ -80,13 +80,13 @@ def albums_view(request):
             if form.is_valid():
                 for file in request.FILES.getlist('files'):
                     Files.objects.create(user=request.user, file=file)
-            return redirect('gallery')
+            return redirect('albums')
         else:
             form = MultiFileForm()
-            photos = Files.objects.filter(user=request.user)
-            return render(request, 'Albums.html', {'photos': photos, 'form': form})
+            albums = Album.objects.filter(user=request.user)
+            return render(request, 'Albums.html', {'albums': albums, 'form': form})
     except ValueError:
-        return redirect('gallery')
+        return redirect('albums')
 
 
 @login_required
