@@ -38,11 +38,11 @@
                             </form>
                     </li>
                     <li>
-                        <a href="#"><i class="bi bi-camera-video"></i> Видео</a>
+                        <a href="{% url 'videos' %}"><i class="bi bi-camera-video"></i> Видео</a>
                     </li>
-                    <li><a href="#"><i class="bi bi-images"></i> Фотографии</a></li>
-                    <li><a href="#"><i class="bi bi-book"></i> Альбомы</a></li>
-                    <li><a href="#"><i class="bi bi-trash3"></i> Корзина</a></li>
+                    <li><a href="{% url 'gallery' %}"><i class="bi bi-images"></i> Фотографии</a></li>
+                    <li><a href="{% url 'albums' %}"><i class="bi bi-book"></i> Альбомы</a></li>
+                    <li><a href="{% url 'bin' %}"><i class="bi bi-trash3"></i> Корзина</a></li>
                 </ul>
             </nav>
         </div>

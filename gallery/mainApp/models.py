@@ -10,13 +10,13 @@ def user_directory_path(instance, filename):
     return 'user_{0}/{1}'.format(instance.user.id, filename)
 
 
-class Photo(models.Model):
+class Files(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=user_directory_path,)
+    file = models.FileField(upload_to=user_directory_path, )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.email}'s Photo"
+        return f"{self.user.email}'s File"
 
 
 class CustomUser(AbstractUser):
@@ -43,7 +43,7 @@ class Album(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='albums')
     title = models.CharField(max_length=255)
     allowed_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='allowed_albums', blank=True)
-    photos = models.ManyToManyField('Photo', related_name='albums_photos', blank=True)
+    files = models.ManyToManyField('Files', related_name='albums_files', blank=True)
 
     def __str__(self):
         return f"{self.author.email}'s Album: {self.title}"

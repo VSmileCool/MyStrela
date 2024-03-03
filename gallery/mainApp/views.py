@@ -1,11 +1,12 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-from mainApp.forms import CustomUserCreationForm, MultiPhotoForm, CustomUserAuthForm
-from mainApp.models import Photo
+from mainApp.forms import CustomUserCreationForm, MultiFileForm, CustomUserAuthForm
+from mainApp.models import Files
 
 
 def home_view(request):
@@ -21,7 +22,7 @@ def home_view(request):
             if register_form.is_valid():
                 user = register_form.save()
                 login(request, user)
-                return redirect('user_gallery')  # Укажите свое представление для переадресации после регистрации
+                return redirect('gallery')  # Укажите свое представление для переадресации после регистрации
             else:
                 show_registration_form = True
 
@@ -34,7 +35,7 @@ def home_view(request):
                 if user is not None:
                     # Пользователь успешно аутентифицирован
                     login(request, user)
-                    return redirect('user_gallery')  # Укажите свое представление для переадресации после входа
+                    return redirect('gallery')  # Укажите свое представление для переадресации после входа
                 else:
                     # Аутентификация не удалась
                     show_login_form = True
@@ -46,10 +47,10 @@ def home_view(request):
                                          'show_login_form': show_login_form})
 
 
-@login_required
-def gallery_view(request):
-    photos = Photo.objects.filter(user=request.user)
-    return render(request, 'photo_list.html', {'photos': photos})
+# @login_required
+# def gallery_view(request):
+#     photos = Photo.objects.filter(user=request.user)
+#     return render(request, 'photo_list.html', {'photos': photos})
 
 
 @login_required
@@ -57,14 +58,72 @@ def gallery_view(request):
     try:
         if request.method == 'POST':
             print(request.POST)
-            form = MultiPhotoForm(request.POST, request.FILES)
+            form = MultiFileForm(request.POST, request.FILES)
             if form.is_valid():
-                for image in request.FILES.getlist('images'):
-                    Photo.objects.create(user=request.user, image=image)
-            return redirect('user_gallery')
+                for file in request.FILES.getlist('files'):
+                    Files.objects.create(user=request.user, file=file)
+            return redirect('gallery')
         else:
-            form = MultiPhotoForm()
-            photos = Photo.objects.filter(user=request.user)
+            form = MultiFileForm()
+            photos = Files.objects.filter(user=request.user)
             return render(request, 'Gallery.html', {'photos': photos, 'form': form})
     except ValueError:
-        return redirect('user_gallery')
+        return redirect('gallery')
+
+
+@login_required
+def albums_view(request):
+    try:
+        if request.method == 'POST':
+            print(request.POST)
+            form = MultiFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                for file in request.FILES.getlist('files'):
+                    Files.objects.create(user=request.user, file=file)
+            return redirect('gallery')
+        else:
+            form = MultiFileForm()
+            photos = Files.objects.filter(user=request.user)
+            return render(request, 'Albums.html', {'photos': photos, 'form': form})
+    except ValueError:
+        return redirect('gallery')
+
+
+@login_required
+def videos_view(request):
+    try:
+        if request.method == 'POST':
+            print(request.POST)
+            form = MultiFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                for file in request.FILES.getlist('files'):
+                    Files.objects.create(user=request.user, file=file)
+            return redirect('videos')
+        else:
+            form = MultiFileForm()
+            videos = Files.objects.filter(
+                Q(user=request.user, file__endswith='.mp4') |
+                Q(user=request.user, file__endswith='.avi') |
+                Q(user=request.user, file__endswith='.mov')
+            )
+            return render(request, 'Videos.html', {'videos': videos, 'form': form})
+    except ValueError:
+        return redirect('videos')
+
+
+@login_required
+def bin_view(request):
+    try:
+        if request.method == 'POST':
+            print(request.POST)
+            form = MultiFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                for file in request.FILES.getlist('files'):
+                    Photo.objects.create(user=request.user, image=file)
+            return redirect('gallery')
+        else:
+            form = MultiFileForm()
+            photos = Photo.objects.filter(user=request.user)
+            return render(request, 'Albums.html', {'photos': photos, 'form': form})
+    except ValueError:
+        return redirect('gallery')
