@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-from mainApp.forms import CustomUserCreationForm, MultiFileForm, CustomUserAuthForm
+from mainApp.forms import CustomUserCreationForm, MultiFileForm, CustomUserAuthForm, CreateAlbum
 from mainApp.models import Files, Album
 
 
@@ -47,12 +47,6 @@ def home_view(request):
                                          'show_login_form': show_login_form})
 
 
-# @login_required
-# def gallery_view(request):
-#     photos = Photo.objects.filter(user=request.user)
-#     return render(request, 'photo_list.html', {'photos': photos})
-
-
 @login_required
 def gallery_view(request):
     try:
@@ -65,7 +59,11 @@ def gallery_view(request):
             return redirect('gallery')
         else:
             form = MultiFileForm()
-            photos = Files.objects.filter(user=request.user)
+            photos = Files.objects.filter(
+                Q(user=request.user, file__endswith='.jpg') |
+                Q(user=request.user, file__endswith='.jpeg') |
+                Q(user=request.user, file__endswith='.png')
+            )
             return render(request, 'Gallery.html', {'photos': photos, 'form': form})
     except ValueError:
         return redirect('gallery')
@@ -76,15 +74,16 @@ def albums_view(request):
     try:
         if request.method == 'POST':
             print(request.POST)
-            form = MultiFileForm(request.POST, request.FILES)
-            if form.is_valid():
-                for file in request.FILES.getlist('files'):
-                    Files.objects.create(user=request.user, file=file)
+            album_form = CreateAlbum(request.POST, request.TITLE)
+            if album_form.is_valid():
+                print("HUISHE")
+                Album.objects.create(user=request.user, title=album_form.cleaned_data['title'])
             return redirect('albums')
         else:
             form = MultiFileForm()
+            album_form = CreateAlbum()
             albums = Album.objects.filter(user=request.user)
-            return render(request, 'Albums.html', {'albums': albums, 'form': form})
+            return render(request, 'Albums.html', {'albums': albums, 'form': form, 'album_form': album_form})
     except ValueError:
         return redirect('albums')
 
@@ -113,17 +112,18 @@ def videos_view(request):
 
 @login_required
 def bin_view(request):
-    try:
-        if request.method == 'POST':
-            print(request.POST)
-            form = MultiFileForm(request.POST, request.FILES)
-            if form.is_valid():
-                for file in request.FILES.getlist('files'):
-                    Photo.objects.create(user=request.user, image=file)
-            return redirect('gallery')
-        else:
-            form = MultiFileForm()
-            photos = Photo.objects.filter(user=request.user)
-            return render(request, 'Albums.html', {'photos': photos, 'form': form})
-    except ValueError:
-        return redirect('gallery')
+    pass
+    # try:
+    #     if request.method == 'POST':
+    #         print(request.POST)
+    #         form = MultiFileForm(request.POST, request.FILES)
+    #         if form.is_valid():
+    #             for file in request.FILES.getlist('files'):
+    #                 Files.objects.create(user=request.user, image=file)
+    #         return redirect('gallery')
+    #     else:
+    #         form = MultiFileForm()
+    #         photos = Files.objects.filter(user=request.user)
+    #         return render(request, 'Albums.html', {'photos': photos, 'form': form})
+    # except ValueError:
+    #     return redirect('gallery')

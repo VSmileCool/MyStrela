@@ -40,7 +40,7 @@ class CustomUser(AbstractUser):
 
 
 class Album(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='albums')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='albums')
     title = models.CharField(max_length=255)
     allowed_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='allowed_albums', blank=True)
     files = models.ManyToManyField('Files', related_name='albums_files', blank=True)

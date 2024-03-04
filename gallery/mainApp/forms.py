@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
 from multiupload.fields import MultiFileField
-from mainApp.models import CustomUser
+from mainApp.models import CustomUser, Album
 
 
 class PasswordInputNoAutocomplete(forms.PasswordInput):
@@ -72,8 +72,16 @@ class MultipleFileField(forms.FileField):
 
 class MultiFileForm(forms.Form):
     files = MultipleFileField(validators=[
-                                FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'mp4', 'avi', 'mov'])])
+        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'mp4', 'avi', 'mov'])])
 
 
+class CreateAlbum(forms.ModelForm):
 
+    title = forms.CharField(
+        label='',
+        widget=forms.TextInput(attrs={'autofocus': True, 'placeholder': 'Новый альбом'})
+    )
 
+    class Meta:
+        model = Album
+        fields = ['title', ]
