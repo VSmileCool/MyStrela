@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from mainApp.forms import CustomUserCreationForm, MultiFileForm, CustomUserAuthForm, CreateAlbum
 from mainApp.models import Files, Album
@@ -74,10 +74,10 @@ def albums_view(request):
     try:
         if request.method == 'POST':
             print(request.POST)
-            album_form = CreateAlbum(request.POST, request.TITLE)
+            album_form = CreateAlbum(request.POST)
             if album_form.is_valid():
-                print("HUISHE")
-                Album.objects.create(user=request.user, title=album_form.cleaned_data['title'])
+                album = Album.objects.create(user=request.user, title=album_form.cleaned_data['title'])
+                album.allowed_users.add(request.user)
             return redirect('albums')
         else:
             form = MultiFileForm()
@@ -86,6 +86,15 @@ def albums_view(request):
             return render(request, 'Albums.html', {'albums': albums, 'form': form, 'album_form': album_form})
     except ValueError:
         return redirect('albums')
+
+
+@login_required
+def album_photos_view(request, album_id):
+    album = get_object_or_404(Album, pk=album_id, user=request.user)
+    photos = album.files.filter(content_type='photo')
+    videos = album.files.filter(content_type='video')
+
+    return render(request, 'album_content.html', {'album': album, 'photos': photos, 'videos': videos})
 
 
 @login_required

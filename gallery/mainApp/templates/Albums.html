@@ -23,19 +23,15 @@
               {{ album_form.as_p }}
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
               <button type="submit" class="btn btn-primary">Создать</button>
             </div>
           </div>
         </div>
       </div>
     </form>
-<!--    {% for file in photos %}-->
-<!--        <div class="gallery">-->
-<!--          <a target="_blank" href="file.image.url">-->
-<!--            <img src="{{file.file.url}}" alt="photo" width="250" height="380">-->
-<!--          </a>-->
-<!--          <div class="desc">Загружено {{file.created_at|date:"d.m.Y в H:i"}}</div>-->
-<!--        </div>-->
-<!--    {% endfor %}-->
+    {% for album in albums %}
+        <div class="album">
+            <a href="{% url 'album_photos' album.id %}">{{ album.title }}</a>
+        </div>
+    {% endfor %}
 {% endblock %}

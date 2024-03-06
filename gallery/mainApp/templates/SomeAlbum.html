@@ -1,0 +1,23 @@
+{% extends 'BaseGallery.html' %}
+
+{% block title %}Gallery{% endblock %}
+
+{% block content %}
+  <h2>{{ album.title }} Content</h2>
+
+  <!-- Выводите фотографии альбома -->
+  <h3>Photos</h3>
+  {% for photo in photos %}
+    <img src="{{ photo.image.url }}" alt="{{ photo.title }}">
+  {% endfor %}
+
+  <!-- Выводите видео альбома -->
+  <h3>Videos</h3>
+  {% for video in videos %}
+    <!-- Ваш код для встраивания видео, например, используя тег <video> -->
+    <video controls width="400" height="300">
+      <source src="{{ video.video.url }}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  {% endfor %}
+{% endblock %}
