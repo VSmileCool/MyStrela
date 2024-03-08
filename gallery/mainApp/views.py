@@ -2,7 +2,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from mainApp.forms import CustomUserCreationForm, MultiFileForm, CustomUserAuthForm, CreateAlbum
@@ -55,7 +55,8 @@ def gallery_view(request):
             form = MultiFileForm(request.POST, request.FILES)
             if form.is_valid():
                 for file in request.FILES.getlist('files'):
-                    Files.objects.create(user=request.user, file=file)
+                    title = file.name
+                    Files.objects.create(user=request.user, file=file, title=title)
             return redirect('gallery')
         else:
             form = MultiFileForm()
@@ -164,3 +165,19 @@ def videos_view(request):
 @login_required
 def bin_view(request):
     pass
+
+
+@login_required
+def delete_file(request,  file_id):
+    file_to_delete = get_object_or_404(Files, id=file_id, user=request.user)
+    # Проверка, принадлежит ли файл пользователю для безопасности
+    if file_to_delete.user != request.user:
+        raise Http404("File not found")
+
+    try:
+        file_to_delete.file.delete()
+        return JsonResponse({'message': 'File successfully deleted'})
+    except Exception as e:
+        print(f"Error deleting file: {e}")
+        return JsonResponse({'error': 'Failed to delete file'}, status=500)
+

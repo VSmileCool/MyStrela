@@ -50,6 +50,7 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+</body>
 
     <script>
         $(function(){
@@ -59,5 +60,6 @@
             });
         });
     </script>
-</body>
+
+    <script src="{% static 'js/RightClickMenu.js' %}"></script>
 </html>
