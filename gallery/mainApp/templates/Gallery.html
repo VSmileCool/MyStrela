@@ -5,7 +5,7 @@
 {% block content %}
     {% for file in photos %}
         <div class="gallery">
-          <a target="_blank" href="file.image.url">
+          <a target="_blank" href="file.file.url">
             <img src="{{file.file.url}}" alt="photo" width="250" height="380">
           </a>
           <div class="desc">Загружено {{file.created_at|date:"d.m.Y в H:i"}}</div>

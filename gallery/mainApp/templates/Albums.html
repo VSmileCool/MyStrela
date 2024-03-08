@@ -31,7 +31,7 @@
     </form>
     {% for album in albums %}
         <div class="album">
-            <a href="{% url 'album_photos' album.id %}">{{ album.title }}</a>
+            <a href="{% url 'album_files' album.id %}">{{ album.title }}</a>
         </div>
     {% endfor %}
 {% endblock %}

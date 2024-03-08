@@ -78,7 +78,7 @@ def albums_view(request):
             if album_form.is_valid():
                 album = Album.objects.create(user=request.user, title=album_form.cleaned_data['title'])
                 album.allowed_users.add(request.user)
-            return redirect('albums')
+                return redirect('photo_add', album_id=album.id)
         else:
             form = MultiFileForm()
             album_form = CreateAlbum()
@@ -89,12 +89,54 @@ def albums_view(request):
 
 
 @login_required
-def album_photos_view(request, album_id):
-    album = get_object_or_404(Album, pk=album_id, user=request.user)
-    photos = album.files.filter(content_type='photo')
-    videos = album.files.filter(content_type='video')
+def album_view(request, album_id):
+    photos = []
+    videos = []
 
-    return render(request, 'album_content.html', {'album': album, 'photos': photos, 'videos': videos})
+    album = get_object_or_404(Album, pk=album_id, user=request.user)
+    files = album.files.all()
+    for file in files:
+        file_name = file.file.name.lower()
+
+        if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif')):
+            photos.append(file)
+        elif file_name.endswith(('.mp4', '.avi', '.mov')):
+            videos.append(file)
+
+    return render(request, 'SomeAlbum.html', {'album': album, 'photos': photos, 'videos': videos})
+
+
+@login_required
+def add_files_to_album(request, album_id):
+    try:
+        album = get_object_or_404(Album, id=album_id, user=request.user)
+        if request.method == 'POST':
+            selected_photos_ids = request.POST.getlist('selected_photos')
+            selected_videos_ids = request.POST.getlist('selected_videos')
+            for video_id in selected_videos_ids:
+                video = get_object_or_404(Files, id=video_id, user=request.user)
+                print(video)
+                new_video = album.files.add(video)
+                print(new_video)
+            for photo_id in selected_photos_ids:
+                photo = get_object_or_404(Files, id=photo_id, user=request.user)
+                album.files.add(photo)
+            return redirect('album_files', album_id=album.id)
+        else:
+            photos = Files.objects.filter(
+                Q(user=request.user, file__endswith='.jpg') |
+                Q(user=request.user, file__endswith='.jpeg') |
+                Q(user=request.user, file__endswith='.png') |
+                Q(user=request.user, file__endswith='.gif')
+            )
+            videos = Files.objects.filter(
+                Q(user=request.user, file__endswith='.mp4') |
+                Q(user=request.user, file__endswith='.avi') |
+                Q(user=request.user, file__endswith='.mov')
+            )
+            return render(request, 'ChooseFilesToAdd.html', {'photos': photos, 'videos': videos})
+    except Exception as e:
+        return redirect('albums')
 
 
 @login_required
@@ -122,17 +164,3 @@ def videos_view(request):
 @login_required
 def bin_view(request):
     pass
-    # try:
-    #     if request.method == 'POST':
-    #         print(request.POST)
-    #         form = MultiFileForm(request.POST, request.FILES)
-    #         if form.is_valid():
-    #             for file in request.FILES.getlist('files'):
-    #                 Files.objects.create(user=request.user, image=file)
-    #         return redirect('gallery')
-    #     else:
-    #         form = MultiFileForm()
-    #         photos = Files.objects.filter(user=request.user)
-    #         return render(request, 'Albums.html', {'photos': photos, 'form': form})
-    # except ValueError:
-    #     return redirect('gallery')
