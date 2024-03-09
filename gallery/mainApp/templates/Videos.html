@@ -1,8 +1,9 @@
 {% extends 'BaseGallery.html' %}
 
 {% block content %}
+    {% csrf_token %}
     {% for video in videos %}
-        <div class="gallery">
+        <div class="gallery" data-photo-id="{{ video.id }}">
             <h4>{{ video.title }}</h4>
             <a target="_blank" href="{{ video.file.url }}">
                 <video controls width="250" height="380">

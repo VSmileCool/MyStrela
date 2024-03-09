@@ -3,22 +3,34 @@
 {% block title %}Gallery{% endblock %}
 
 {% block content %}
+  {% csrf_token %}
   <h2>Альбом {{ album.title }}</h2>
   <a href="{% url 'photo_add' album_id=album.id %}"> Добавить файлы</a>
 
   <!-- Выводите фотографии альбома -->
   <h3>Фотографии:</h3>
-  {% for photo in photos %}
-    <img src="{{ photo.file.url }}" alt="{{ photo.title }}" width="350" height="350">
-  {% endfor %}
+    {% for file in photos %}
+        <div class="gallery" data-photo-id="{{ file.id }}">
+            <h4>{{ file.title }}</h4>
+            <a target="_blank" href="file.url">
+                <img src="{{file.file.url}}" alt="photo" width="250" height="380">
+            </a>
+            <div class="desc">Загружено {{file.created_at|date:"d.m.Y в H:i"}}</div>
+        </div>
+    {% endfor %}
 
   <!-- Выводите видео альбома -->
   <h3>Видео:</h3>
-  {% for video in videos %}
-    <!-- Ваш код для встраивания видео, например, используя тег <video> -->
-    <video controls width="400" height="300">
-      <source src="{{ video.file.url }}" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  {% endfor %}
+   {% for video in videos %}
+        <div class="gallery">
+            <h4>{{ video.title }}</h4>
+            <a target="_blank" href="{{ video.file.url }}">
+                <video controls width="250" height="380">
+                    <source src="{{ video.file.url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </a>
+            <div class="desc">Загружено {{ video.created_at|date:"d.m.Y в H:i" }}</div>
+        </div>
+    {% endfor %}
 {% endblock %}

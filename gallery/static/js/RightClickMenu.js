@@ -102,7 +102,13 @@ document.querySelectorAll('.gallery')
             })
             .catch(error => console.error('Error:', error));
         },
-      },
-      // Другие опции меню...
+      },{
+        label: "Save",
+        action(opt) {
+          const photoId = opt.photoId;
+          const csrfToken = opt.csrfToken;
+          window.location.href = `/download/${photoId}/`;
+        },
+      }
     ]);
   });

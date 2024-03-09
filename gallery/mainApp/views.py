@@ -2,7 +2,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Q
-from django.http import HttpResponse, Http404, JsonResponse
+from django.http import HttpResponse, Http404, JsonResponse, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from mainApp.forms import CustomUserCreationForm, MultiFileForm, CustomUserAuthForm, CreateAlbum
@@ -168,7 +168,7 @@ def bin_view(request):
 
 
 @login_required
-def delete_file(request,  file_id):
+def delete_file(request, file_id):
     file_to_delete = get_object_or_404(Files, id=file_id, user=request.user)
     # Проверка, принадлежит ли файл пользователю для безопасности
     if file_to_delete.user != request.user:
@@ -181,3 +181,14 @@ def delete_file(request,  file_id):
         print(f"Error deleting file: {e}")
         return JsonResponse({'error': 'Failed to delete file'}, status=500)
 
+
+def download_file_view(request, file_id):
+
+    # Получаем объект файла по его идентификатору
+    file_object = get_object_or_404(Files, id=file_id)
+    # Открываем файл на сервере и создаем FileResponse
+    response = FileResponse(open(file_object.file.path, 'rb'))
+
+    # Устанавливаем заголовки для скачивания файла
+    response['Content-Disposition'] = f'attachment; filename="{file_object.file.name}"'
+    return response
