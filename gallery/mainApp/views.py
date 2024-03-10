@@ -6,7 +6,7 @@ from django.http import HttpResponse, Http404, JsonResponse, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from mainApp.forms import CustomUserCreationForm, MultiFileForm, CustomUserAuthForm, CreateAlbum
-from mainApp.models import Files, Album
+from mainApp.models import Files, Album, CustomUser
 
 
 def home_view(request):
@@ -83,7 +83,7 @@ def albums_view(request):
         else:
             form = MultiFileForm()
             album_form = CreateAlbum()
-            albums = Album.objects.filter(user=request.user)
+            albums = Album.objects.filter(allowed_users__id=request.user.id)
             return render(request, 'Albums.html', {'albums': albums, 'form': form, 'album_form': album_form})
     except ValueError:
         return redirect('albums')
@@ -93,18 +93,23 @@ def albums_view(request):
 def album_view(request, album_id):
     photos = []
     videos = []
+    all_user_emails = CustomUser.objects.values_list('email', flat=True)
+    user = request.user
 
-    album = get_object_or_404(Album, pk=album_id, user=request.user)
-    files = album.files.all()
-    for file in files:
-        file_name = file.file.name.lower()
+    album = get_object_or_404(Album, pk=album_id)
+    if request.user == album.user or request.user in album.allowed_users.all():
+        files = album.files.all()
+        for file in files:
+            file_name = file.file.name.lower()
 
-        if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif')):
-            photos.append(file)
-        elif file_name.endswith(('.mp4', '.avi', '.mov')):
-            videos.append(file)
+            if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif')):
+                photos.append(file)
+            elif file_name.endswith(('.mp4', '.avi', '.mov')):
+                videos.append(file)
+    else:
+        raise Http404("File not found")
 
-    return render(request, 'SomeAlbum.html', {'album': album, 'photos': photos, 'videos': videos})
+    return render(request, 'SomeAlbum.html', {'user': user, 'album': album, 'photos': photos, 'videos': videos, 'emails': all_user_emails})
 
 
 @login_required
@@ -163,11 +168,6 @@ def videos_view(request):
 
 
 @login_required
-def bin_view(request):
-    pass
-
-
-@login_required
 def delete_file(request, file_id):
     file_to_delete = get_object_or_404(Files, id=file_id, user=request.user)
     # Проверка, принадлежит ли файл пользователю для безопасности
@@ -182,8 +182,8 @@ def delete_file(request, file_id):
         return JsonResponse({'error': 'Failed to delete file'}, status=500)
 
 
+@login_required
 def download_file_view(request, file_id):
-
     # Получаем объект файла по его идентификатору
     file_object = get_object_or_404(Files, id=file_id)
     # Открываем файл на сервере и создаем FileResponse
@@ -192,3 +192,22 @@ def download_file_view(request, file_id):
     # Устанавливаем заголовки для скачивания файла
     response['Content-Disposition'] = f'attachment; filename="{file_object.file.name}"'
     return response
+
+
+@login_required
+def add_user_to_album(request):
+    user_email = request.GET.get('user_email')
+    album_id = request.GET.get('album_id')
+
+    album = get_object_or_404(Album, pk=album_id)
+    if request.user == album.user or request.user in album.allowed_users.all():
+        user_to_add = get_object_or_404(CustomUser, email=user_email)
+        album.allowed_users.add(user_to_add)
+        print('added')
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        else:
+            return redirect('albums')  # Замените 'your_default_url' на URL по умолчанию
+    else:
+        raise Http404("Auth error")
