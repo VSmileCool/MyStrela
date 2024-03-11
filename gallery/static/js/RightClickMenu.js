@@ -77,7 +77,7 @@ const attachContextMenu = (() => {
   };
 })();
 
-document.querySelectorAll('.gallery')
+document.querySelectorAll('.card')
   .forEach(btn => {
     attachContextMenu(btn, [
       {
@@ -85,6 +85,7 @@ document.querySelectorAll('.gallery')
         action(opt) {
           const photoId = opt.photoId;
           const csrfToken = opt.csrfToken;
+          console.log(photoId)
           fetch(`/delete/${photoId}/`, {
             method: 'POST',
             headers: {

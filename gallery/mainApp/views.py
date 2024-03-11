@@ -1,8 +1,7 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Q
-from django.http import HttpResponse, Http404, JsonResponse, FileResponse
+from django.http import Http404, JsonResponse, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from mainApp.forms import CustomUserCreationForm, MultiFileForm, CustomUserAuthForm, CreateAlbum
@@ -22,22 +21,19 @@ def home_view(request):
             if register_form.is_valid():
                 user = register_form.save()
                 login(request, user)
-                return redirect('gallery')  # Укажите свое представление для переадресации после регистрации
+                return redirect('gallery')
             else:
                 show_registration_form = True
 
         elif 'login_form' in request.POST:
             login_form = CustomUserAuthForm(request, request.POST)
             if login_form.is_valid():
-                # user = login_form.get_user()
                 user = authenticate(request, email=login_form.cleaned_data['email'],
                                     password=login_form.cleaned_data['password'])
                 if user is not None:
-                    # Пользователь успешно аутентифицирован
                     login(request, user)
-                    return redirect('gallery')  # Укажите свое представление для переадресации после входа
+                    return redirect('gallery')
                 else:
-                    # Аутентификация не удалась
                     show_login_form = True
             else:
                 show_login_form = True
@@ -78,13 +74,13 @@ def albums_view(request):
             album_form = CreateAlbum(request.POST)
             if album_form.is_valid():
                 album = Album.objects.create(user=request.user, title=album_form.cleaned_data['title'])
-                album.allowed_users.add(request.user)
                 return redirect('photo_add', album_id=album.id)
         else:
             form = MultiFileForm()
             album_form = CreateAlbum()
-            albums = Album.objects.filter(allowed_users__id=request.user.id)
-            return render(request, 'Albums.html', {'albums': albums, 'form': form, 'album_form': album_form})
+            shared_albums = Album.objects.filter(allowed_users__id=request.user.id)
+            albums = Album.objects.filter(user_id=request.user.id)
+            return render(request, 'Albums.html', {'shared_albums': shared_albums,'albums': albums, 'form': form, 'album_form': album_form})
     except ValueError:
         return redirect('albums')
 
@@ -97,25 +93,37 @@ def album_view(request, album_id):
     user = request.user
 
     album = get_object_or_404(Album, pk=album_id)
-    if request.user == album.user or request.user in album.allowed_users.all():
-        files = album.files.all()
-        for file in files:
-            file_name = file.file.name.lower()
+    allowed_users = album.allowed_users.all()
 
-            if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif')):
-                photos.append(file)
-            elif file_name.endswith(('.mp4', '.avi', '.mov')):
-                videos.append(file)
+    files = album.files.all()
+    for file in files:
+        file_name = file.file.name.lower()
+
+        if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif')):
+            photos.append(file)
+        elif file_name.endswith(('.mp4', '.avi', '.mov')):
+            videos.append(file)
+    if request.user == album.user:
+        if allowed_users:
+            return render(request, 'SomeAlbum.html',
+                          {'allowed_users': allowed_users, 'user': user, 'album': album, 'photos': photos,
+                           'videos': videos,
+                           'emails': all_user_emails})
+        else:
+            return render(request, 'SomeAlbum.html',
+                          {'allowed_users': False, 'user': user, 'album': album, 'photos': photos, 'videos': videos,
+                           'emails': all_user_emails})
+    elif request.user in allowed_users:
+        return render(request, 'SomeAlbum.html',
+                      {'member': True, 'user': user, 'album': album, 'photos': photos, 'videos': videos})
     else:
         raise Http404("File not found")
-
-    return render(request, 'SomeAlbum.html', {'user': user, 'album': album, 'photos': photos, 'videos': videos, 'emails': all_user_emails})
 
 
 @login_required
 def add_files_to_album(request, album_id):
     try:
-        album = get_object_or_404(Album, id=album_id, user=request.user)
+        album = get_object_or_404(Album, id=album_id)
         if request.method == 'POST':
             selected_photos_ids = request.POST.getlist('selected_photos')
             selected_videos_ids = request.POST.getlist('selected_videos')
@@ -184,9 +192,7 @@ def delete_file(request, file_id):
 
 @login_required
 def download_file_view(request, file_id):
-    # Получаем объект файла по его идентификатору
     file_object = get_object_or_404(Files, id=file_id)
-    # Открываем файл на сервере и создаем FileResponse
     response = FileResponse(open(file_object.file.path, 'rb'))
 
     # Устанавливаем заголовки для скачивания файла
@@ -200,7 +206,7 @@ def add_user_to_album(request):
     album_id = request.GET.get('album_id')
 
     album = get_object_or_404(Album, pk=album_id)
-    if request.user == album.user or request.user in album.allowed_users.all():
+    if request.user == album.user:
         user_to_add = get_object_or_404(CustomUser, email=user_email)
         album.allowed_users.add(user_to_add)
         print('added')
@@ -208,6 +214,25 @@ def add_user_to_album(request):
         if referer:
             return redirect(referer)
         else:
-            return redirect('albums')  # Замените 'your_default_url' на URL по умолчанию
+            return redirect('albums')
+    else:
+        raise Http404("Auth error")
+
+
+@login_required
+def delete_user_from_album(request):
+    user_email = request.GET.get('user_email')
+    album_id = request.GET.get('album_id')
+
+    album = get_object_or_404(Album, pk=album_id)
+    if request.user == album.user:
+        user_to_remove = get_object_or_404(CustomUser, email=user_email)
+        album.allowed_users.remove(user_to_remove)
+        print('deleted')
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        else:
+            return redirect('albums')
     else:
         raise Http404("Auth error")
