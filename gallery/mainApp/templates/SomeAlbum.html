@@ -1,74 +1,84 @@
-{% extends 'BaseGallery.html' %}
-{% load static %}
+{% extends 'BaseGallery.html' %} {% load static %} {% block title %}Gallery{%
+endblock %} {% block content %}
+<h2>Альбом {{ album.title }}</h2>
+{% if not member %} {% csrf_token %}
+<!--    bootstrap element для открывающего списка. Там открываются участники альбома(кроме админа) и поле для добавления по email в альбом-->
+<!--    у простого участника это скрыто ес чо-->
+<button
+  aria-controls="collapseExample"
+  aria-expanded="false"
+  class="btn btn-primary"
+  data-bs-target="#AddOneToAlbum"
+  data-bs-toggle="collapse"
+  type="button"
+>
+  Участники
+</button>
+<div class="collapse" id="AddOneToAlbum">
+  <form action="{% url 'adding_user' %}" class="row g-3">
+    <div>
+      {% if allowed_users %} {% for user in allowed_users %}
+      <h4>
+        {{ user.email }}
+        <button
+          aria-label="Close"
+          class="btn-close"
+          onclick="removeUser('{{ user.email }}', '{{ album.id }}')"
+          type="button"
+        ></button>
+      </h4>
+      {% endfor %} {% else %}
+      <h4>Вы пока не добавили ни одного участника</h4>
+      {% endif %}
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="exampleDataList">Введите почту</label>
+      <input
+        class="form-control"
+        id="exampleDataList"
+        list="datalistOptions"
+        name="user_email"
+        placeholder="name@example.com"
+      />
+      <input name="album_id" type="hidden" value="{{ album.id }}" />
+      <datalist id="datalistOptions">
+        {% for email in emails %}
+        <option value="{{email}}">{% endfor %}</option>
+      </datalist>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-primary mb-3" type="submit">Пригласить</button>
+    </div>
+  </form>
+</div>
+{% endif %}
+<a href="{% url 'photo_add' album_id=album.id %}"> Добавить файлы</a>
 
-{% block title %}Gallery{% endblock %}
+<h3>Фотографии:</h3>
+{% for file in photos %}
+<!--    bootstrap element for beautiful card view. Also in videos.html, Gallery.html, SomeAlbum.html-->
+<div class="card" data-photo-id="{{ file.id }}" style="width: 18rem">
+  <img alt="photo" class="card-img-top" src="{{file.file.url}}" />
+  <div class="card-body">
+    <h5 class="card-title">{{ file.title }}</h5>
+    <p class="card-text">Загружено {{file.created_at|date:"d.m.Y в H:i"}}</p>
+  </div>
+</div>
+{% endfor %}
 
-{% block content %}
-    <h2>Альбом {{ album.title }}</h2>
-    {% if not member %}
-        {% csrf_token %}
-        <!--    bootstrap element для открывающего списка. Там открываются участники альбома(кроме админа) и поле для добавления по email в альбом-->
-        <!--    у простого участника это скрыто ес чо-->
-        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#AddOneToAlbum" aria-expanded="false" aria-controls="collapseExample">
-            Участники
-        </button>
-        <div class="collapse" id="AddOneToAlbum">
-            <form class="row g-3" action="{% url 'adding_user' %}">
-                <div>
-                    {% if allowed_users %}
-                        {% for user in allowed_users %}
-                            <h4>{{ user.email }}<button type="button" class="btn-close" aria-label="Close" onclick="removeUser('{{ user.email }}', '{{ album.id }}')"   ></button></h4>
-                        {% endfor %}
-                    {% else %}
-                        <h4>Вы пока не добавили ни одного участника</h4>
-                    {% endif %}
-                </div>
-                <div class="mb-3">
-                    <label for="exampleDataList" class="form-label">Введите почту</label>
-                    <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="name@example.com" name="user_email">
-                    <input type="hidden" name="album_id" value="{{ album.id }}">
-                    <datalist id="datalistOptions">
-                        {% for email in emails %}
-                            <option value="{{email}}">
-                        {% endfor %}
-                    </datalist>
-                </div>
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-primary mb-3">Пригласить</button>
-                </div>
-            </form>
-        </div>
-    {% endif %}
-    <a href="{% url 'photo_add' album_id=album.id %}"> Добавить файлы</a>
-
-  <h3>Фотографии:</h3>
-    {% for file in photos %}
-        <!--    bootstrap element for beautiful card view. Also in videos.html, Gallery.html, SomeAlbum.html-->
-        <div class="card" style="width: 18rem;" data-photo-id="{{ file.id }}">
-            <img src="{{file.file.url}}" class="card-img-top" alt="photo">
-            <div class="card-body">
-                <h5 class="card-title">{{ file.title }}</h5>
-                <p class="card-text">Загружено {{file.created_at|date:"d.m.Y в H:i"}}</p>
-            </div>
-        </div>
-    {% endfor %}
-
-  <h3>Видео:</h3>
-   {% for video in videos %}
-        <!--    bootstrap element for beautiful card view. Also in videos.html, Gallery.html, SomeAlbum.html-->
-        <div class="card" style="width: 18rem;" data-photo-id="{{ video.id }}">
-            <video controls width="250" height="380">
-                    <source src="{{ video.file.url }}" type="video/mp4">
-                    Your browser does not support the video tag.
-            </video>
-            <div class="card-body">
-                <h5 class="card-title">{{ video.title }}</h5>
-                <p class="card-text">Загружено {{video.created_at|date:"d.m.Y в H:i"}}</p>
-            </div>
-        </div>
-    {% endfor %}
-{% endblock %}
-
-{% block scripts %}
-    <script src="{% static 'js/RemoveUserFromAlbum.js' %}"></script>
+<h3>Видео:</h3>
+{% for video in videos %}
+<!--    bootstrap element for beautiful card view. Also in videos.html, Gallery.html, SomeAlbum.html-->
+<div class="card" data-photo-id="{{ video.id }}" style="width: 18rem">
+  <video controls height="380" width="250">
+    <source src="{{ video.file.url }}" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+  <div class="card-body">
+    <h5 class="card-title">{{ video.title }}</h5>
+    <p class="card-text">Загружено {{video.created_at|date:"d.m.Y в H:i"}}</p>
+  </div>
+</div>
+{% endfor %} {% endblock %} {% block scripts %}
+<script src="{% static 'js/RemoveUserFromAlbum.js' %}"></script>
 {% endblock %}

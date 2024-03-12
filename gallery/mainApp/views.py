@@ -80,7 +80,7 @@ def albums_view(request):
             album_form = CreateAlbum()
             shared_albums = Album.objects.filter(allowed_users__id=request.user.id)
             albums = Album.objects.filter(user_id=request.user.id)
-            return render(request, 'Albums.html', {'shared_albums': shared_albums,'albums': albums, 'form': form, 'album_form': album_form})
+            return render(request, 'Albums.html', {'shared_albums': shared_albums, 'albums': albums, 'form': form, 'album_form': album_form})
     except ValueError:
         return redirect('albums')
 

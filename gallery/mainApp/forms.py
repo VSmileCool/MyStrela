@@ -3,6 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
 from multiupload.fields import MultiFileField
+
 from mainApp.models import CustomUser, Album
 
 
@@ -76,7 +77,6 @@ class MultiFileForm(forms.Form):
 
 
 class CreateAlbum(forms.ModelForm):
-
     title = forms.CharField(
         label='',
         widget=forms.TextInput(attrs={'autofocus': True, 'placeholder': 'Новый альбом'})
