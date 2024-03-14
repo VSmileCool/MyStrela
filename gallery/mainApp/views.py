@@ -59,9 +59,7 @@ def gallery_view(request):
             photos = Files.objects.filter(
                 Q(user=request.user, file__endswith='.jpg') |
                 Q(user=request.user, file__endswith='.jpeg') |
-                Q(user=request.user, file__endswith='.png') |
-                Q(user=request.user, file__endswith='.row') |
-                Q(user=request.user, file__endswith='.dng')
+                Q(user=request.user, file__endswith='.png')
             )
             return render(request, 'Gallery.html', {'photos': photos, 'form': form})
     except ValueError:
@@ -101,7 +99,7 @@ def album_view(request, album_id):
     for file in files:
         file_name = file.file.name.lower()
 
-        if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif', '.dng', '.row')):
+        if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif')):
             photos.append(file)
         elif file_name.endswith(('.mp4', '.avi', '.mov')):
             videos.append(file)
@@ -143,8 +141,7 @@ def add_files_to_album(request, album_id):
                 Q(user=request.user, file__endswith='.jpg') |
                 Q(user=request.user, file__endswith='.jpeg') |
                 Q(user=request.user, file__endswith='.png') |
-                Q(user=request.user, file__endswith='.row') |
-                Q(user=request.user, file__endswith='.dng')
+                Q(user=request.user, file__endswith='.gif')
             )
             videos = Files.objects.filter(
                 Q(user=request.user, file__endswith='.mp4') |

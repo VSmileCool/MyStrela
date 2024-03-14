@@ -72,7 +72,7 @@ class MultipleFileField(forms.FileField):
 
 class MultiFileForm(forms.Form):
     files = MultipleFileField(validators=[
-        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'mp4', 'avi', 'mov', 'dng', 'row'])])
+        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'mp4', 'avi', 'mov'])])
 
 
 class CreateAlbum(forms.ModelForm):
