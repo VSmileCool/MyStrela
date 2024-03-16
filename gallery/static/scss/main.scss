@@ -67,7 +67,7 @@ body {
     font-style: normal;
     display: block;
     color: #cc2936;
-    font-size: 30px;
+    font-size: 48px;
     text-decoration: none;
     transition: 0.15s linear color;
   }
@@ -258,7 +258,7 @@ div.gallery {
       font-size: 16px;
       font-family: "Montserrat Alternates Black", sans-serif;
       cursor: pointer;
-
+      margin-right: 20px;
       &:focus {
         border: none;
         outline: none;
@@ -284,4 +284,108 @@ div.gallery {
       }
     }
   }
+}
+.enter-modal {
+  //display: none;
+  z-index: 1000;
+  border-radius: 15px;
+  margin-left: auto;
+  width: 512px;
+  max-width: 100%;
+  height: 680px;
+  max-height: 100%;
+  background-color: #fcfff7;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  .enter-modal-content {
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    .close-button {
+      margin-top: 12px;
+      margin-left: 92%;
+      border: none;
+      cursor: pointer;
+      background-color: transparent;
+      &:focus {
+        border: none;
+        outline: none;
+      }
+    }
+    .welcome {
+      font-family: "Montserrat Black", sans-serif;
+      margin-top: 36px;
+      font-size: 24px;
+      text-align: center;
+    }
+    .logo-h2 {
+      font-family: "Montserrat Alternates Black", sans-serif;
+      color: #cc2936;
+      text-align: center;
+      font-size: 24px;
+    }
+    .inputs {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 72px;
+      input[type="email"] {
+        background-color: transparent;
+        letter-spacing: 1px;
+        width: 288px;
+        height: 46px;
+        border: #6c6f7d 3px solid;
+        border-radius: 15px;
+        padding-left: 10px;
+        &::placeholder {
+          background-color: transparent;
+          color: #6c6f7d;
+          font-family: "Montserrat", sans-serif;
+        }
+      }
+      .password {
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        width: 288px;
+        height: 46px;
+        border: #6c6f7d 3px solid;
+        border-radius: 15px;
+      }
+      input[type="password"] {
+        padding: 0;
+        border: none;
+        background-color: transparent;
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+    .forgot-password {
+      text-decoration: underline #121113;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}
+.background-dark {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 900;
+  width: 100%;
+  height: 100%;
+  //display: none;
+  background-color: rgba(0, 0, 0, 0.5);
 }

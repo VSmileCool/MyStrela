@@ -4,8 +4,45 @@
     <a href="#">Sharedphotos</a>
   </h1>
   <div class="button-group">
-    <button class="enter" href="enterModal">Войти</button>
+    <button
+      onclick="document.getElementById('enter-modal').style.display='block'; document.getElementById('background-dark').style.display='block'"
+      class="enter"
+      href="enterModal"
+    >
+      Войти
+    </button>
     <button class="registration" href="registrationModal">Регистрация</button>
+  </div>
+</div>
+<div
+  onclick="document.getElementById('enter-modal').style.display='none'; document.getElementById('background-dark').style.display='none'"
+  class="background-dark"
+  id="background-dark"
+></div>
+<div id="enter-modal" class="enter-modal">
+  <div class="enter-modal-content">
+    <img
+      onclick="document.getElementById('enter-modal').style.display='none'; document.getElementById('background-dark').style.display='none'"
+      class="close-button"
+      src="../../static/svg/exit.svg"
+      alt=""
+      width="19px"
+    />
+
+    <div class="container">
+      <h2 class="welcome">
+        Добро пожаловать в
+        <h2 class="logo-h2">SharedPhotos</h2>
+      </h2>
+      <div class="inputs">
+        <input type="email" placeholder="Электронная почта" />
+        <div class="password">
+          <input type="password" placeholder="Пароль" />
+          <img src="../../static/svg/eye.svg" alt="" />
+        </div>
+      </div>
+      <a class="forgot-password">Забыли пароль?</a>
+    </div>
   </div>
 </div>
 
