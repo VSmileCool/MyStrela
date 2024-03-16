@@ -1,11 +1,16 @@
+import json
+from io import StringIO, BytesIO
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
+from django.core.files.base import ContentFile
 from django.db.models import Q
-from django.http import Http404, JsonResponse, FileResponse
+from django.http import Http404, JsonResponse, FileResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from PIL import Image, ImageEnhance, ImageDraw, ImageFont
+from django.views.decorators.csrf import csrf_exempt
 
 from mainApp.forms import CustomUserCreationForm, MultiFileForm, CustomUserAuthForm, CreateAlbum
-from mainApp.models import Files, Album, CustomUser
+from mainApp.models import Files, Album, CustomUser, Tag
 
 
 def home_view(request):
@@ -59,7 +64,9 @@ def gallery_view(request):
             photos = Files.objects.filter(
                 Q(user=request.user, file__endswith='.jpg') |
                 Q(user=request.user, file__endswith='.jpeg') |
-                Q(user=request.user, file__endswith='.png')
+                Q(user=request.user, file__endswith='.png') |
+                Q(user=request.user, file__endswith='.row') |
+                Q(user=request.user, file__endswith='.dng')
             )
             return render(request, 'Gallery.html', {'photos': photos, 'form': form})
     except ValueError:
@@ -98,8 +105,7 @@ def album_view(request, album_id):
     files = album.files.all()
     for file in files:
         file_name = file.file.name.lower()
-
-        if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif')):
+        if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif', '.dng', '.row')):
             photos.append(file)
         elif file_name.endswith(('.mp4', '.avi', '.mov')):
             videos.append(file)
@@ -141,7 +147,8 @@ def add_files_to_album(request, album_id):
                 Q(user=request.user, file__endswith='.jpg') |
                 Q(user=request.user, file__endswith='.jpeg') |
                 Q(user=request.user, file__endswith='.png') |
-                Q(user=request.user, file__endswith='.gif')
+                Q(user=request.user, file__endswith='.row') |
+                Q(user=request.user, file__endswith='.dng')
             )
             videos = Files.objects.filter(
                 Q(user=request.user, file__endswith='.mp4') |
@@ -189,7 +196,6 @@ def delete_file(request, file_id):
         print(f"Error deleting file: {e}")
         return JsonResponse({'error': 'Failed to delete file'}, status=500)
 
-
 @login_required
 def download_file_view(request, file_id):
     file_object = get_object_or_404(Files, id=file_id)
@@ -236,3 +242,124 @@ def delete_user_from_album(request):
             return redirect('albums')
     else:
         raise Http404("Auth error")
+
+
+@login_required
+# @csrf_exempt
+def add_tag(request):
+    print("WE ARE ADDING NOW")
+    new_tag = request.GET.get('tag')
+    file_id = request.GET.get('file_id')
+    print(new_tag, file_id)
+
+    file = get_object_or_404(Files, pk=file_id)
+    if True:
+        tag = Tag.objects.create(name=new_tag)
+        file.tags.add(tag)
+        print('added')
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        else:
+            return redirect('gallery')
+    else:
+        raise Http404("Auth error")
+
+
+#ТАМАРЕН КОД СНИЗУ
+@login_required
+def change_image_view(request):
+    if request.method == 'GET':
+        photo_url = request.GET.get('photo')
+        photo_id = request.GET.get('id')
+        if photo_url:
+            return render(request, 'ChangeImage.html', {'photourl': photo_url, 'photoid': photo_id})
+
+
+@login_required
+def crop_image(request):
+    if request.method == 'GET':
+        photo_url = request.GET.get('photo')
+        photo_id = request.GET.get('id')
+
+        return render(request, 'CropImage.html', {'photourl': photo_url, 'photoid': photo_id})
+
+
+def save_cropped_image(request):
+    print("WE ARE IN SAVING CROPPED IMAGE")
+    x = int(request.GET.get('x'))
+    y = int(request.GET.get('y'))
+    height = int(request.GET.get('height'))
+    width = int(request.GET.get('width'))
+    id = request.GET.get('id')
+
+    myModel = Files.objects.get(pk=id)
+
+    original_photo = BytesIO(myModel.file.read())
+    output_photo = BytesIO()
+
+    image = Image.open(original_photo)
+    # print(x,y,height,width)
+    image = image.crop((x, y, x + width, y + height))
+    # image = image.crop((190,40,340+190,380))
+
+    # image = image.rotate(-int(rValue))
+    # image = enhBrightness.enhance(int(bValue) / 100)
+    # enhContrast = ImageEnhance.Contrast(image)
+    # image = enhContrast.enhance(int(cValue) / 100 )
+
+    image.save(output_photo, 'JPEG')
+
+    myModel.file.save(f"{id}_cropped.jpg", ContentFile(output_photo.getvalue()))
+    myModel.save()
+
+    path = myModel.file.path
+    # return HttpResponse(json.dumps({'filepath': path[path.index("\media")::]}),content_type="application/json")
+
+
+def save_image(request):
+    if request.method == 'GET':
+        bValue = request.GET.get('brightness')
+        cValue = request.GET.get('contrast')
+        rValue = request.GET.get('rotation')
+        photo = request.GET.get('photo')
+        id = request.GET.get('id')
+        textX = request.GET.get('textX')
+        textY = request.GET.get('textY')
+        textValue = request.GET.get('textValue')
+
+        myModel = Files.objects.get(pk=id)
+
+        original_photo = BytesIO(myModel.file.read())
+        rotated_photo = BytesIO()
+
+        image = Image.open(original_photo)
+
+        enhBrightness = ImageEnhance.Brightness(image)
+
+        image = image.rotate(-int(rValue))
+        image = enhBrightness.enhance(int(bValue) / 100)
+        enhContrast = ImageEnhance.Contrast(image)
+        image = enhContrast.enhance(int(cValue) / 100)
+
+        print(textY, textX, textValue)
+
+        if textValue:
+            font = ImageFont.load_default(size=16 * 3)
+            width, height = image.size
+            draw_text = ImageDraw.Draw(image)
+            draw_text.text(((width * int(textX)) / 100, (height * int(textY)) / 100), textValue, fill='#1C0606',
+                           font=font)
+
+        image.save(rotated_photo, 'JPEG')
+
+        myModel.file.save(f"{photo[photo.rindex('/') + 1:photo.rindex('.'):]}.jpg", ContentFile(rotated_photo.getvalue()))
+        myModel.save()
+
+        print("1!!!!", myModel.file.path)
+
+        # with open ("D:/Programming/TexStrela2024/gallery/media/user_1/ocr.jpg", 'rb') as f:
+        # Files.objects.create(user=request.user, file=file_object, title="tututu")
+        print(bValue, cValue, rValue, photo, id)
+        path = myModel.file.path
+        return HttpResponse(json.dumps({'filepath': path[path.index("media") - 1::]}), content_type="application/json")
