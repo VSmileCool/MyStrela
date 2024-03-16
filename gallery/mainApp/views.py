@@ -7,9 +7,10 @@ from django.db.models import Q
 from django.http import Http404, JsonResponse, FileResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from PIL import Image, ImageEnhance, ImageDraw, ImageFont
+from django.views.decorators.csrf import csrf_exempt
 
 from mainApp.forms import CustomUserCreationForm, MultiFileForm, CustomUserAuthForm, CreateAlbum
-from mainApp.models import Files, Album, CustomUser
+from mainApp.models import Files, Album, CustomUser, Tag
 
 
 def home_view(request):
@@ -244,20 +245,23 @@ def delete_user_from_album(request):
 
 
 @login_required
+# @csrf_exempt
 def add_tag(request):
+    print("WE ARE ADDING NOW")
     new_tag = request.GET.get('tag')
     file_id = request.GET.get('file_id')
+    print(new_tag, file_id)
 
     file = get_object_or_404(Files, pk=file_id)
-    if request.user == file.user:
-        user_to_remove = get_object_or_404(CustomUser, email=user_email)
-        album.allowed_users.remove(user_to_remove)
-        print('deleted')
+    if True:
+        tag = Tag.objects.create(name=new_tag)
+        file.tags.add(tag)
+        print('added')
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
         else:
-            return redirect('albums')
+            return redirect('gallery')
     else:
         raise Http404("Auth error")
 

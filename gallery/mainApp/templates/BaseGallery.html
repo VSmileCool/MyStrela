@@ -50,7 +50,31 @@
         </div>
     </header>
     <main>
-        {% block content %}{% endblock %}
+        <form method="post" name="tag_form">
+            {% csrf_token %}
+            <div class="modal fade" id="TagModal" tabindex="-1" role="dialog" aria-labelledby="TagModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="TagModalLabel">Добавить тег</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="text" class="form-control" id="tagInput" name="tag" placeholder="Введите тег">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                            <input type="hidden" name="photo_id" value="{{ file.id }}">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" name="register_form">Добавить</button>
+                        </div>
+                  </div>
+                </div>
+            </div>
+        </form>
+        {% block content %}
+        {% endblock %}
     </main>
 </body>
 

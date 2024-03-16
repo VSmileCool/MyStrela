@@ -10,12 +10,19 @@ def user_directory_path(instance, filename):
     return 'user_{0}/{1}'.format(instance.user.id, filename)
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
 class Files(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, null=True, blank=True)
     file = models.FileField(upload_to=user_directory_path, )
     created_at = models.DateTimeField(auto_now_add=True)
-    tags = models.CharField(max_length=100, null=True)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return f"{self.user.email}'s File"
@@ -45,7 +52,7 @@ class Album(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='albums')
     title = models.CharField(max_length=255)
     allowed_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='allowed_albums', blank=True)
-    files = models.ManyToManyField('Files', related_name='albums_files', blank=True, unique=False)
+    files = models.ManyToManyField(Files, related_name='albums_files', blank=True, unique=False)
 
     def __str__(self):
         return f"{self.author.email}'s Album: {self.title}"
