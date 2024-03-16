@@ -74,7 +74,7 @@ WSGI_APPLICATION = 'gallery.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'tex-strela',  # Or path to database file if using sqlite3.
+        'NAME': 'mysql',  # Or path to database file if using sqlite3.
         'USER': 'root',
         'PASSWORD': '',  # Not used with sqlite3.
         'HOST': '',  # Используйте это значение для подключения к MySQL на том же хосте

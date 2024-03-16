@@ -1,7 +1,19 @@
 @font-face {
   font-family: "Montserrat Alternates Black";
   src: url("../fonts/MontserratAlternates-Black.ttf") format("truetype"), url("../fonts/montserratalternates-black-webfont.woff2") format("woff2"), url("../fonts/montserratalternates-black-webfont.woff") format("woff");
+  font-weight: 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Montserrat Regular", sans-serif;
+  src: url("../fonts/Montserrat-Regular.ttf");
   font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Montserrat Black", sans-serif;
+  src: url("../fonts/Montserrat-Black.ttf");
+  font-weight: 900;
   font-style: normal;
 }
 /* Common styles */
@@ -282,7 +294,8 @@ div.gallery .desc {
   outline: none;
 }
 .enter-modal .enter-modal-content .welcome {
-  font-family: "Montserrat Black", sans-serif;
+  font-family: "Montserrat Black", "Montserrat Black", sans-serif;
+  font-weight: bold;
   margin-top: 36px;
   font-size: 24px;
   text-align: center;
@@ -336,6 +349,19 @@ div.gallery .desc {
 }
 .enter-modal .enter-modal-content .forgot-password:hover {
   cursor: pointer;
+}
+.enter-modal .enter-modal-content .enter {
+  margin-top: 33px;
+  background-color: #cc2936;
+  border: none;
+  border-radius: 15px;
+  width: 288px;
+  height: 46px;
+  color: #fcfff7;
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
 .background-dark {
