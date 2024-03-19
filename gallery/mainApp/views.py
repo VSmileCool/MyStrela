@@ -1,13 +1,13 @@
 import json
-from io import StringIO, BytesIO
+from io import BytesIO
+
+from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
 from django.db.models import Q
 from django.http import Http404, JsonResponse, FileResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from PIL import Image, ImageEnhance, ImageDraw, ImageFont
-from django.views.decorators.csrf import csrf_exempt
 
 from mainApp.forms import CustomUserCreationForm, MultiFileForm, CustomUserAuthForm, CreateAlbum
 from mainApp.models import Files, Album, CustomUser, Tag
@@ -24,10 +24,12 @@ def home_view(request):
         if 'register_form' in request.POST:
             register_form = CustomUserCreationForm(request.POST)
             if register_form.is_valid():
+                print("form is valid")
                 user = register_form.save()
                 login(request, user)
                 return redirect('gallery')
             else:
+                print("form isn't valid")
                 show_registration_form = True
 
         elif 'login_form' in request.POST:
@@ -196,6 +198,7 @@ def delete_file(request, file_id):
         print(f"Error deleting file: {e}")
         return JsonResponse({'error': 'Failed to delete file'}, status=500)
 
+
 @login_required
 def download_file_view(request, file_id):
     file_object = get_object_or_404(Files, id=file_id)
@@ -266,7 +269,7 @@ def add_tag(request):
         raise Http404("Auth error")
 
 
-#ТАМАРЕН КОД СНИЗУ
+# ТАМАРЕН КОД СНИЗУ
 @login_required
 def change_image_view(request):
     if request.method == 'GET':

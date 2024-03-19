@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import FileExtensionValidator
 from django.db import models
 
 from gallery import settings

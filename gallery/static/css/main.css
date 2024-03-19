@@ -256,10 +256,12 @@ div.gallery .desc {
   outline: none;
 }
 
-.enter-modal {
+.modal {
+  display: none;
   z-index: 1000;
   border-radius: 15px;
   margin-left: auto;
+  margin-right: auto;
   width: 512px;
   max-width: 100%;
   height: 680px;
@@ -267,10 +269,9 @@ div.gallery .desc {
   background-color: #fcfff7;
   position: fixed;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(0, -50%);
 }
-.enter-modal .enter-modal-content {
+.modal .modal-content {
   flex-direction: column;
   display: flex;
   align-items: center;
@@ -282,37 +283,37 @@ div.gallery .desc {
   height: 100%;
   overflow: auto;
 }
-.enter-modal .enter-modal-content .close-button {
+.modal .modal-content .close-button {
   margin-top: 12px;
   margin-left: 92%;
   border: none;
   cursor: pointer;
   background-color: transparent;
 }
-.enter-modal .enter-modal-content .close-button:focus {
+.modal .modal-content .close-button:focus {
   border: none;
   outline: none;
 }
-.enter-modal .enter-modal-content .welcome {
+.modal .modal-content .welcome {
   font-family: "Montserrat Black", "Montserrat Black", sans-serif;
   font-weight: bold;
   margin-top: 36px;
   font-size: 24px;
   text-align: center;
 }
-.enter-modal .enter-modal-content .logo-h2 {
+.modal .modal-content .logo-h2 {
   font-family: "Montserrat Alternates Black", sans-serif;
   color: #cc2936;
   text-align: center;
   font-size: 24px;
 }
-.enter-modal .enter-modal-content .inputs {
+.modal .modal-content .inputs {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 72px;
 }
-.enter-modal .enter-modal-content .inputs input[type=email] {
+.modal .modal-content .inputs input[type=email] {
   background-color: transparent;
   letter-spacing: 1px;
   width: 288px;
@@ -321,12 +322,12 @@ div.gallery .desc {
   border-radius: 15px;
   padding-left: 10px;
 }
-.enter-modal .enter-modal-content .inputs input[type=email]::placeholder {
+.modal .modal-content .inputs input[type=email]::placeholder {
   background-color: transparent;
   color: #6c6f7d;
   font-family: "Montserrat", sans-serif;
 }
-.enter-modal .enter-modal-content .inputs .password {
+.modal .modal-content .inputs .password {
   margin-top: 15px;
   display: flex;
   justify-content: space-around;
@@ -336,21 +337,35 @@ div.gallery .desc {
   border: #6c6f7d 3px solid;
   border-radius: 15px;
 }
-.enter-modal .enter-modal-content .inputs input[type=password] {
+.modal .modal-content .inputs .password .opened {
+  cursor: pointer;
+}
+.modal .modal-content .inputs .password .hidden {
+  background-color: #fcfff7;
+  position: absolute;
+  z-index: 10001;
+  transform: translate(-24px, 2px);
+  width: 24px;
+}
+.modal .modal-content .inputs .password .hidden:hover {
+  cursor: pointer;
+}
+.modal .modal-content .inputs .password-input {
   padding: 0;
   border: none;
   background-color: transparent;
 }
-.enter-modal .enter-modal-content .inputs input[type=password]:focus {
+.modal .modal-content .inputs .password-input:focus {
   outline: none;
 }
-.enter-modal .enter-modal-content .forgot-password {
-  text-decoration: underline #121113;
+.modal .modal-content .forgot-password {
+  color: #121113;
 }
-.enter-modal .enter-modal-content .forgot-password:hover {
+.modal .modal-content .forgot-password:hover {
+  text-decoration: underline #121113;
   cursor: pointer;
 }
-.enter-modal .enter-modal-content .enter {
+.modal .modal-content .enter {
   margin-top: 33px;
   background-color: #cc2936;
   border: none;
@@ -363,6 +378,37 @@ div.gallery .desc {
   font-weight: bold;
   letter-spacing: 1px;
 }
+.modal .modal-content .enter:hover {
+  cursor: pointer;
+}
+.modal .modal-content .agreements {
+  width: 421px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 50px;
+}
+.modal .modal-content .agreements:hover {
+  cursor: default;
+}
+.modal .modal-content .line {
+  height: 1px;
+  width: 84px;
+  border-top: 1px solid #6c6f7d;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+}
+.modal .modal-content .not-registered {
+  margin-top: 18px;
+  font-size: 12px;
+}
+.modal .modal-content .not-registered a {
+  color: #121113;
+}
+.modal .modal-content .not-registered a:hover {
+  text-decoration: underline #121113;
+  cursor: pointer;
+}
 
 .background-dark {
   position: fixed;
@@ -371,7 +417,53 @@ div.gallery .desc {
   z-index: 900;
   width: 100%;
   height: 100%;
+  display: none;
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+.grid-container {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  align-items: end;
+  justify-content: space-around;
+  margin-left: auto;
+  margin-right: auto;
+}
+.grid-container .grid-element {
+  animation: 2s show ease-out;
+  position: relative;
+  width: 180px;
+}
+.grid-container .grid-element:nth-child(2) {
+  margin-top: 32px;
+}
+@keyframes show {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.center-text {
+  font-size: 36px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  width: 18em;
+  margin-top: 100px;
+}
+
+.bottom-gradient {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 150px;
+  background: rgb(252, 255, 247);
+  background: linear-gradient(180deg, rgba(252, 255, 247, 0) 0%, rgb(252, 255, 247) 100%);
 }
 
 /*# sourceMappingURL=main.css.map */

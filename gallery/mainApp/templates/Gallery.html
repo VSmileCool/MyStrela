@@ -1,19 +1,13 @@
-{% extends 'BaseGallery.html' %}
-
-{% block title %}Gallery{% endblock %}
-
-{% block content %}
-    {% csrf_token %}
-    {% for file in photos %}
+{% extends 'BaseGallery.html' %} {% block title %}Gallery{% endblock %} {% block
+content %} {% csrf_token %} {% for file in photos %}
 <!--    bootstrap element for beautiful card view. Also in videos.html, Gallery.html, SomeAlbum.html-->
-        <div class="card" style="width: 18rem;" data-photo-id="{{ file.id }}">
-            <a target="_blank" href="changeimage/?photo={{file.file.url}}&id={{file.id}}">
-                <img src="{{file.file.url}}" class="card-img-top" alt="photo">
-            </a>
-            <div class="card-body">
-                <h5 class="card-title">{{ file.title }}</h5>
-                <p class="card-text">Загружено {{file.created_at|date:"d.m.Y в H:i"}}</p>
-            </div>
-        </div>
-    {% endfor %}
-{% endblock %}
+<div class="card" data-photo-id="{{ file.id }}" style="width: 18rem">
+  <a href="changeimage/?photo={{file.file.url}}&id={{file.id}}" target="_blank">
+    <img alt="photo" class="card-img-top" src="{{file.file.url}}" />
+  </a>
+  <div class="card-body">
+    <h5 class="card-title">{{ file.title }}</h5>
+    <p class="card-text">Загружено {{file.created_at|date:"d.m.Y в H:i"}}</p>
+  </div>
+</div>
+{% endfor %}
