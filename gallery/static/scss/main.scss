@@ -7,20 +7,21 @@
   font-weight: 900;
   font-style: normal;
 }
+
 @font-face {
   font-family: "Montserrat Regular", sans-serif;
   src: url("../fonts/Montserrat-Regular.ttf");
   font-weight: normal;
-  font-style:normal;
-
+  font-style: normal;
 }
+
 @font-face {
   font-family: "Montserrat Black", sans-serif;
   src: url("../fonts/Montserrat-Black.ttf");
   font-weight: 900;
-  font-style:normal;
-
+  font-style: normal;
 }
+
 /* Common styles */
 *,
 *:before,
@@ -272,6 +273,7 @@ div.gallery {
       font-family: "Montserrat Alternates Black", sans-serif;
       cursor: pointer;
       margin-right: 20px;
+
       &:focus {
         border: none;
         outline: none;
@@ -298,11 +300,13 @@ div.gallery {
     }
   }
 }
-.enter-modal {
-  //display: none;
+
+.modal {
+  display: none;
   z-index: 1000;
   border-radius: 15px;
   margin-left: auto;
+  margin-right: auto;
   width: 512px;
   max-width: 100%;
   height: 680px;
@@ -310,9 +314,10 @@ div.gallery {
   background-color: #fcfff7;
   position: fixed;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  .enter-modal-content {
+  //left: 50%;
+  transform: translate(0, -50%);
+
+  .modal-content {
     flex-direction: column;
     display: flex;
     align-items: center;
@@ -323,35 +328,41 @@ div.gallery {
     width: 100%;
     height: 100%;
     overflow: auto;
+
     .close-button {
       margin-top: 12px;
       margin-left: 92%;
       border: none;
       cursor: pointer;
       background-color: transparent;
+
       &:focus {
         border: none;
         outline: none;
       }
     }
+
     .welcome {
-      font-family: "Montserrat Black","Montserrat Black", sans-serif;
+      font-family: "Montserrat Black", "Montserrat Black", sans-serif;
       font-weight: bold;
       margin-top: 36px;
       font-size: 24px;
       text-align: center;
     }
+
     .logo-h2 {
       font-family: "Montserrat Alternates Black", sans-serif;
       color: #cc2936;
       text-align: center;
       font-size: 24px;
     }
+
     .inputs {
       display: flex;
       flex-direction: column;
       align-items: center;
       margin-top: 72px;
+
       input[type="email"] {
         background-color: transparent;
         letter-spacing: 1px;
@@ -360,12 +371,14 @@ div.gallery {
         border: #6c6f7d 3px solid;
         border-radius: 15px;
         padding-left: 10px;
+
         &::placeholder {
           background-color: transparent;
           color: #6c6f7d;
           font-family: "Montserrat", sans-serif;
         }
       }
+
       .password {
         margin-top: 15px;
         display: flex;
@@ -375,38 +388,98 @@ div.gallery {
         height: 46px;
         border: #6c6f7d 3px solid;
         border-radius: 15px;
+
+        .opened {
+          cursor: pointer;
+        }
+
+        .hidden {
+          background-color: #fcfff7;
+          position: absolute;
+          z-index: 10001;
+          transform: translate(-24px, 2px);
+          width: 24px;
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
       }
-      input[type="password"] {
+
+      .password-input {
         padding: 0;
         border: none;
         background-color: transparent;
+
         &:focus {
           outline: none;
         }
       }
     }
+
     .forgot-password {
-      text-decoration: underline #121113;
+      color: #121113;
+
       &:hover {
+        text-decoration: underline #121113;
         cursor: pointer;
       }
-
     }
-    .enter{
+
+    .enter {
       margin-top: 33px;
-       background-color: #cc2936;
-       border: none;
-       border-radius: 15px;
-       width: 288px;
+      background-color: #cc2936;
+      border: none;
+      border-radius: 15px;
+      width: 288px;
       height: 46px;
       color: #fcfff7;
       font-family: "Montserrat", sans-serif;
       font-size: 16px;
       font-weight: bold;
       letter-spacing: 1px;
-     }
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .agreements {
+      width: 421px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 50px;
+
+      &:hover {
+        cursor: default;
+      }
+    }
+
+    .line {
+      height: 1px;
+      width: 84px;
+      border-top: 1px solid #6c6f7d;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 10px;
+    }
+
+    .not-registered {
+      margin-top: 18px;
+      font-size: 12px;
+
+      a {
+        color: #121113;
+
+        &:hover {
+          text-decoration: underline #121113;
+          cursor: pointer;
+        }
+      }
+    }
   }
 }
+
 .background-dark {
   position: fixed;
   top: 0;
@@ -414,6 +487,58 @@ div.gallery {
   z-index: 900;
   width: 100%;
   height: 100%;
-  //display: none;
+  display: none;
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+.grid-container {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  align-items: end;
+  justify-content: space-around;
+  margin-left: auto;
+  margin-right: auto;
+
+  .grid-element {
+    animation: 2s show ease-out;
+    position: relative;
+    width: 180px;
+
+    &:nth-child(2) {
+      margin-top: 32px;
+    }
+
+    @keyframes show {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.center-text {
+  font-size: 36px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  width: 18em;
+  margin-top: 100px;
+}
+
+.bottom-gradient {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 150px;
+  background: rgb(252, 255, 247);
+  background: linear-gradient(
+    180deg,
+    rgba(252, 255, 247, 0) 0%,
+    rgba(252, 255, 247, 1) 100%
+  );
 }

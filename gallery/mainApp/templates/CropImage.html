@@ -1,73 +1,83 @@
-{% extends 'BaseGallery.html' %}
-{% load static %}
-
-{% block title %}ChangeImage{% endblock %}
-
-{% block content %}
+{% extends 'BaseGallery.html' %} {% load static %} {% block title
+%}ChangeImage{% endblock %} {% block content %}
 <!-- style="filter: brightness(50%);" -->
-    <div style="display: inline-block; width: 70%; margin-top: 5%;">
-        <img id="image" src="{{photourl}}"  style="margin:auto;">
-        <!-- <img id="imageforchanging" style="display: block; margin:auto" src="{{photourl}}"  alt="photo" width="40%" height="auto"> -->
-    </div>
+<div style="display: inline-block; width: 70%; margin-top: 5%">
+  <img id="image" src="{{photourl}}" style="margin: auto" />
+  <!-- <img id="imageforchanging" style="display: block; margin:auto" src="{{photourl}}"  alt="photo" width="40%" height="auto"> -->
+</div>
 
-    <!-- <div id="image-box"><img id="image" src="{{photourl}}"></div> -->
-    <!-- МЕНЮ ИЗМЕНЕНИЯ КАРТИНКИ -->
-    <div style="height: 95%;
-                width: 25%;
-                background-color: white;
-                float: right;
-                border-radius: 10px;
-                text-align: center;">
+<!-- <div id="image-box"><img id="image" src="{{photourl}}"></div> -->
+<!-- МЕНЮ ИЗМЕНЕНИЯ КАРТИНКИ -->
+<div
+  style="
+    height: 95%;
+    width: 25%;
+    background-color: white;
+    float: right;
+    border-radius: 10px;
+    text-align: center;
+  "
+>
+  <div id="aPhotoId">{{photoid}}</div>
+  <!-- <div id="dataX">?</div>
+    <div id="dataY">?</div> -->
+  <!-- <input type="text" class="form-control" id="dataX" placeholder="x">
+    <input type="text" class="form-control" id="dataY" placeholder="y"> -->
+  <div class="input-group input-group-sm">
+    <span class="input-group-prepend">
+      <span class="input-group-text" for="dataX">X</span>
+    </span>
+    <input class="form-control" id="dataX" placeholder="x" type="text" />
+    <span class="input-group-append">
+      <span class="input-group-text">px</span>
+    </span>
+  </div>
+  <div class="input-group input-group-sm">
+    <span class="input-group-prepend">
+      <span class="input-group-text" for="dataY">Y</span>
+    </span>
+    <input class="form-control" id="dataY" placeholder="y" type="text" />
+    <span class="input-group-append">
+      <span class="input-group-text">px</span>
+    </span>
+  </div>
+  <div class="input-group input-group-sm">
+    <span class="input-group-prepend">
+      <span class="input-group-text" for="dataWidth">Width</span>
+    </span>
+    <input
+      class="form-control"
+      id="dataWidth"
+      placeholder="width"
+      type="text"
+    />
+    <span class="input-group-append">
+      <span class="input-group-text">px</span>
+    </span>
+  </div>
+  <div class="input-group input-group-sm">
+    <span class="input-group-prepend">
+      <span class="input-group-text" for="dataHeight">Height</span>
+    </span>
+    <input
+      class="form-control"
+      id="dataHeight"
+      placeholder="height"
+      type="text"
+    />
+    <span class="input-group-append">
+      <span class="input-group-text">px</span>
+    </span>
+  </div>
+  <button onclick="cropImage()">CROP</button>
+</div>
 
-        <div id="aPhotoId">{{photoid}}</div>
-        <!-- <div id="dataX">?</div>
-        <div id="dataY">?</div> -->
-        <!-- <input type="text" class="form-control" id="dataX" placeholder="x">
-        <input type="text" class="form-control" id="dataY" placeholder="y"> -->
-        <div class="input-group input-group-sm">
-            <span class="input-group-prepend">
-                <span class="input-group-text" for="dataX">X</span>
-            </span>
-            <input type="text" class="form-control" id="dataX" placeholder="x">
-            <span class="input-group-append">
-              <span class="input-group-text">px</span>
-            </span>
-        </div>
-        <div class="input-group input-group-sm">
-            <span class="input-group-prepend">
-                <span class="input-group-text" for="dataY">Y</span>
-            </span>
-            <input type="text" class="form-control" id="dataY" placeholder="y">
-            <span class="input-group-append">
-              <span class="input-group-text">px</span>
-            </span>
-        </div>
-        <div class="input-group input-group-sm">
-            <span class="input-group-prepend">
-                <span class="input-group-text" for="dataWidth">Width</span>
-            </span>
-            <input type="text" class="form-control" id="dataWidth" placeholder="width">
-            <span class="input-group-append">
-                <span class="input-group-text">px</span>
-            </span>
-        </div>
-          <div class="input-group input-group-sm">
-            <span class="input-group-prepend">
-                <span class="input-group-text" for="dataHeight">Height</span>
-            </span>
-            <input type="text" class="form-control" id="dataHeight" placeholder="height">
-            <span class="input-group-append">
-              <span class="input-group-text">px</span>
-            </span>
-        </div>
-            <button onclick="cropImage()">CROP</button>
-        </div>
-    
-{% endblock %}
-
-{% block scripts %}
-    <script src="{% static 'js\changeImage.js' %}"></script>
-    <script src="{% static 'js\cropper.js' %}"></script>
-    <script src="{% static 'js\main.js' %}"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }} /static/js/jquery-3.7.1.js"></script>
+{% endblock %} {% block scripts %}
+<script src="{% static 'js\changeImage.js' %}"></script>
+<script src="{% static 'js\cropper.js' %}"></script>
+<script src="{% static 'js\main.js' %}"></script>
+<script
+  src="{{ STATIC_URL }} /static/js/jquery-3.7.1.js"
+  type="text/javascript"
+></script>
 {% endblock %}
